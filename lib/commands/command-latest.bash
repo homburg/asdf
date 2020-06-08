@@ -8,12 +8,14 @@ latest_command() {
 
   [[ -z $query ]] && query="$DEFAULT_QUERY"
 
-  # pattern from xxenv-latest (https://github.com/momo-lab/xxenv-latest)
-  asdf list-all "$plugin_name" "$query" |
-    grep -vE "(^Available versions:|-src|-dev|-latest|-stm|[-\\.]rc|-alpha|-beta|[-\\.]pre|-next|(a|b|c)[0-9]+|snapshot|master)" |
-    sed 's/^\s\+//' |
-    sort --version-sort |
-    tail -1
+  local versions
+  versions=$(asdf list-all "$plugin_name" "$query")
+
+  if [ -n "${versions}" ]; then
+    get_latest_version "$versions"
+  else
+    exit 1
+  fi
 }
 
 latest_command "$@"
